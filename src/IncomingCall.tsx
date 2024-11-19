@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { IncomingCallContext } from ".";
 
 function IncomingCall() {
-  const { incomingCall } = useContext(IncomingCallContext);
+  const { incomingCall } = useContext(IncomingCallContext) as IncomingCallContext;
 
   return (
     <div>

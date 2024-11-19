@@ -9,9 +9,9 @@ import { IncomingCallContext } from ".";
 
 function Login() {
   const navigate = useNavigate();
-  const { setIncomingCall } = useContext(IncomingCallContext);
+  const { setIncomingCall } = useContext(IncomingCallContext) as IncomingCallContext;
 
-  const handleLogIn = async (userDetails) => {
+  const handleLogIn = async (userDetails: any) => {
     try {
       const tokenCredential = new AzureCommunicationTokenCredential(
         userDetails.communicationUserToken.token
@@ -40,8 +40,8 @@ function Login() {
 
       const callAgent = await callClient.createTeamsCallAgent(tokenCredential);
 
-      window.callAgent = callAgent;
-      window.videoStreamRenderer = VideoStreamRenderer;
+      (window as any).callAgent = callAgent;
+      (window as any).videoStreamRenderer = VideoStreamRenderer;
 
       callAgent.on("incomingCall", (args) => {
         const incomingCall = args.incomingCall;

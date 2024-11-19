@@ -17,4 +17,5 @@ const authScopes = {
   ],
 };
 
-module.exports = { authConfig, authScopes };
+export {authConfig, authScopes}
+// module.exports = { authConfig, authScopes };

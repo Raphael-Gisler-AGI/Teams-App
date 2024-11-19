@@ -6,18 +6,18 @@ import IncomingCall from "./IncomingCall";
 import Login from "./Login";
 import Header from "./Header";
 import { IncomingCallContext } from ".";
+import { TeamsIncomingCall } from "@azure/communication-calling";
 
 function App() {
-  const [incomingCall, setIncomingCall] = useState();
+  const [incomingCall, setIncomingCall] = useState<TeamsIncomingCall>();
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
+        <Route path="/"
           element={
             <IncomingCallContext.Provider
-              value={{ setIncomingCall: setIncomingCall }}
+              value={{ incomingCall: incomingCall, setIncomingCall: setIncomingCall }}
             >
               <Login />
             </IncomingCallContext.Provider>
@@ -32,7 +32,7 @@ function App() {
               path="/app/incoming"
               element={
                 <IncomingCallContext.Provider
-                  value={{ incomingCall: incomingCall }}
+                  value={{ incomingCall: incomingCall, setIncomingCall: setIncomingCall }}
                 >
                   <IncomingCall />
                 </IncomingCallContext.Provider>

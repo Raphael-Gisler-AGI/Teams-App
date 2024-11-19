@@ -26,8 +26,8 @@ const PORT = process.env.port || 8080;
 
 const oneSignalRegistrationTokenToAcsUserAccesTokenMap = new Map();
 const registerCommunicationUserForOneSignal = async (
-  communicationAccessToken,
-  communicationUserIdentifier
+  communicationAccessToken: any,
+  communicationUserIdentifier: any
 ) => {
   const oneSignalRegistrationToken = generateGuid();
   await axios({
@@ -41,7 +41,7 @@ const registerCommunicationUserForOneSignal = async (
       oneSignalRegistrationToken,
       oneSignalAppId: clientConfig.oneSignalAppId,
     }),
-  }).then((response) => {
+  }).then((response: any) => {
     return response.data;
   });
   oneSignalRegistrationTokenToAcsUserAccesTokenMap.set(
@@ -60,13 +60,13 @@ const generateGuid = function () {
   return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 };
 
-function parseJWT(token) {
+function parseJWT(token: any) {
   return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
 }
 
 // Exchanging Azure AD access token of a Teams User for a Communication access token
 // https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/manage-teams-identity?pivots=programming-language-javascript
-const getACSAccessTokenInfo = async (aadToken, userObjectId) => {
+const getACSAccessTokenInfo = async (aadToken: any, userObjectId: any) => {
   let acsToken;
   try {
     acsToken = await communicationIdentityClient.getTokenForTeamsUser({
@@ -92,12 +92,15 @@ const getACSAccessTokenInfo = async (aadToken, userObjectId) => {
 };
 
 module.exports = {
+  resolve: {
+    extensions: [".ts", ".js", ".tsx"],
+  },
   output: {
     publicPath: "/",
   },
   devtool: "inline-source-map",
   mode: "development",
-  entry: "./src/index.js",
+  entry: "./src/index.tsx",
   module: {
     rules: [
       {
@@ -139,54 +142,55 @@ module.exports = {
     static: "./public",
     allowedHosts: [".azurewebsites.net"],
     webSocketServer: false,
-    setupMiddlewares: (middlewares, devServer) => {
+    setupMiddlewares: (middlewares: any, devServer: any) => {
       if (!devServer) {
         throw new Error("webpack-dev-server is not defined");
       }
 
       devServer.app.use(bodyParser.json());
-      devServer.app.post("/getCommunicationUserToken", async (req, res) => {
-        try {
-          const communicationUserId = req.body.communicationUserId;
-          const isJoinOnlyToken = req.body.isJoinOnlyToken === true;
-          let CommunicationUserIdentifier;
-          if (!communicationUserId) {
-            CommunicationUserIdentifier =
-              await communicationIdentityClient.createUser();
-          } else {
-            CommunicationUserIdentifier = {
-              communicationUserId: communicationUserId,
-            };
-          }
-          const communicationUserToken =
-            await communicationIdentityClient.getToken(
-              CommunicationUserIdentifier,
-              [isJoinOnlyToken ? "voip.join" : "voip"]
-            );
-          let oneSignalRegistrationToken;
-          if (config.functionAppOneSignalTokenRegistrationUrl) {
-            oneSignalRegistrationToken =
-              await registerCommunicationUserForOneSignal(
-                communicationUserToken,
-                CommunicationUserIdentifier
+      devServer.app.post(
+        "/getCommunicationUserToken",
+        async (req: any, res: any) => {
+          try {
+            const communicationUserId = req.body.communicationUserId;
+            const isJoinOnlyToken = req.body.isJoinOnlyToken === true;
+            let CommunicationUserIdentifier;
+            if (!communicationUserId) {
+              CommunicationUserIdentifier =
+                await communicationIdentityClient.createUser();
+            } else {
+              CommunicationUserIdentifier = {
+                communicationUserId: communicationUserId,
+              };
+            }
+            const communicationUserToken =
+              await communicationIdentityClient.getToken(
+                CommunicationUserIdentifier,
+                [isJoinOnlyToken ? "voip.join" : "voip"]
               );
-          }
-          res.setHeader("Content-Type", "application/json");
-          res
-            .status(200)
-            .json({
+            let oneSignalRegistrationToken;
+            if (config.functionAppOneSignalTokenRegistrationUrl) {
+              oneSignalRegistrationToken =
+                await registerCommunicationUserForOneSignal(
+                  communicationUserToken,
+                  CommunicationUserIdentifier
+                );
+            }
+            res.setHeader("Content-Type", "application/json");
+            res.status(200).json({
               communicationUserToken,
               oneSignalRegistrationToken,
               userId: CommunicationUserIdentifier,
             });
-        } catch (e) {
-          console.log("Error setting registration token", e);
-          res.sendStatus(500);
+          } catch (e) {
+            console.log("Error setting registration token", e);
+            res.sendStatus(500);
+          }
         }
-      });
+      );
       devServer.app.post(
         "/getCommunicationUserTokenForOneSignalRegistrationToken",
-        async (req, res) => {
+        async (req: any, res: any) => {
           try {
             const oneSignalRegistrationToken =
               req.body.oneSignalRegistrationToken;
@@ -195,13 +199,11 @@ module.exports = {
                 oneSignalRegistrationToken
               );
             res.setHeader("Content-Type", "application/json");
-            res
-              .status(200)
-              .json({
-                communicationUserToken,
-                userId: communicationUserIdentifier,
-                oneSignalRegistrationToken,
-              });
+            res.status(200).json({
+              communicationUserToken,
+              userId: communicationUserIdentifier,
+              oneSignalRegistrationToken,
+            });
           } catch (e) {
             console.log("Error setting registration token", e);
             res.sendStatus(500);
@@ -210,7 +212,7 @@ module.exports = {
       );
       devServer.app.post(
         "/getOneSignalRegistrationTokenForCommunicationUserToken",
-        async (req, res) => {
+        async (req: any, res: any) => {
           try {
             const communicationUserToken = { token: req.body.token };
             const communicationUserIdentifier = {
@@ -257,7 +259,7 @@ module.exports = {
           }
         }
       );
-      devServer.app.post("/teamsPopupLogin", async (req, res) => {
+      devServer.app.post("/teamsPopupLogin", async (req: any, res: any) => {
         try {
           const aadToken = req.body.aadToken;
           const userObjectId = req.body.userObjectId;
@@ -275,7 +277,7 @@ module.exports = {
           res.sendStatus(400);
         }
       });
-      devServer.app.post("/teamsM365Login", async (req, res) => {
+      devServer.app.post("/teamsM365Login", async (req: any, res: any) => {
         try {
           const email = req.body.email;
           const password = req.body.password;
@@ -283,8 +285,8 @@ module.exports = {
           const pca = new msal.PublicClientApplication(authConfig);
           let tokenRequest = { scopes: authScopes.m365Login };
 
-          tokenRequest.username = email;
-          tokenRequest.password = password;
+          (tokenRequest as any).username = email;
+          (tokenRequest as any).password = password;
           const response = await pca.acquireTokenByUsernamePassword(
             tokenRequest
           );
