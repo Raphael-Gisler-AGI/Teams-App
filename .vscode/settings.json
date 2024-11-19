@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/de06ae5e-6da2-4c69-8282-e058981e48d2/resourceGroups/CTI_SALES_CLOUD_GDVO/providers/Microsoft.Web/sites/cti-new",
+    "appService.deploySubpath": "."
+}
