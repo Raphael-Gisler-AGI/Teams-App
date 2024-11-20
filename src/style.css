@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+}
+
+main {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 10vh;
+  padding: 0 5%;
+  border-bottom: 1px solid black;
+}
+
+header > .userInfo {
+  display: grid;
+}
+
+/* LOGIN */
+
+.wrapLogin {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* PLACE A CALL */
+
+.placeCall {
+  padding: 3% 5%;
+}
+
+.placeCall label {
+  color: white;
+}
+
+.callActions {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* INCOMING CALL */
+
+.wrapIncomingCall {
+  padding: 5%;
+}
+
+.wrapIncomingCall > .incomingCall {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wrapIncomingCall > .incomingCall > .callOptions {
+  display: flex;
+  gap: 10px;
+}

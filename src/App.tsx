@@ -5,43 +5,37 @@ import Overview from "./Overview";
 import IncomingCall from "./IncomingCall";
 import Login from "./Login";
 import Header from "./Header";
-import { IncomingCallContext } from ".";
 import { TeamsIncomingCall } from "@azure/communication-calling";
+import { darkTheme, DEFAULT_COMPONENT_ICONS, FluentThemeProvider } from "@azure/communication-react";
+import { initializeIcons, registerIcons } from "@fluentui/react";
+import { State, TeamsCallState } from "./Types";
+import Call from "./Call";
+
+initializeIcons();
+registerIcons({ icons: DEFAULT_COMPONENT_ICONS });
 
 function App() {
   const [incomingCall, setIncomingCall] = useState<TeamsIncomingCall>();
+  const [state, setState] = useState<State>();
+  const [callState, setCallState] = useState<TeamsCallState>();
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/"
-          element={
-            <IncomingCallContext.Provider
-              value={{ incomingCall: incomingCall, setIncomingCall: setIncomingCall }}
-            >
-              <Login />
-            </IncomingCallContext.Provider>
-          }
-        />
-        <Route
-          path="/app"
-          element={<Header />}
-          children={[
-            <Route path="/app/overview" element={<Overview />} />,
-            <Route
-              path="/app/incoming"
-              element={
-                <IncomingCallContext.Provider
-                  value={{ incomingCall: incomingCall, setIncomingCall: setIncomingCall }}
-                >
-                  <IncomingCall />
-                </IncomingCallContext.Provider>
-              }
-            />,
-          ]}
-        />
-      </Routes>
-    </BrowserRouter>
+    <FluentThemeProvider fluentTheme={darkTheme} rootStyle={{ minHeight: "100vh" }}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login setState={setState} setIncomingCall={setIncomingCall} setCallState={setCallState} />} />
+          <Route
+            path="/app"
+            element={<Header userData={state?.userData} />}
+            children={[
+              <Route path="/app/overview" element={<Overview state={state!} setCallState={setCallState} />} />,
+              <Route path="/app/incoming" element={<IncomingCall state={state!} incomingCall={incomingCall!} setCallState={setCallState} />} />,
+              <Route path="/app/call" element={<Call state={state!} teamsCallState={callState!} />} />
+            ]}
+          />
+        </Routes>
+      </BrowserRouter>
+    </FluentThemeProvider>
   );
 }
 
